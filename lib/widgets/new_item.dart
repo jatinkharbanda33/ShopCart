@@ -10,6 +10,16 @@ class NewItem extends StatefulWidget {
 }
 
 class _NewItemState extends State<NewItem> {
+  final _finalkey = GlobalKey<FormState>();
+  var _enteredname = '';
+  var _enteredquantity = 0;
+  var _selectedcategory = categories[Categories.vegetables]!;
+  void _saveitem() {
+    if (_finalkey.currentState!.validate()) {
+      _finalkey.currentState!.save();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +29,7 @@ class _NewItemState extends State<NewItem> {
       body: Padding(
           padding: const EdgeInsets.all(12),
           child: Form(
+            key: _finalkey,
             child: Column(
               children: [
                 TextFormField(
@@ -27,11 +38,19 @@ class _NewItemState extends State<NewItem> {
                     label: Text('Name'),
                   ),
                   validator: (val) {
-                    return 'abd';
+                    if (val == null ||
+                        val.isEmpty ||
+                        val.trim().length <= 1 ||
+                        val.trim().length > 50) {
+                      return 'Must be between 1 and 50 characters!';
+                    }
+                    return null;
+                  },
+                  onSaved: (newValue) {
+                    _enteredname = newValue!;
                   },
                 ),
                 Row(
-                  
                   children: [
                     Expanded(
                       child: TextFormField(
@@ -40,37 +59,64 @@ class _NewItemState extends State<NewItem> {
                         decoration: InputDecoration(
                           label: Text('Quantity'),
                         ),
+                        validator: (val) {
+                          if (val == null ||
+                              val.isEmpty ||
+                              int.parse(val) == null ||
+                              int.parse(val) <= 0 ||
+                              int.parse(val) >= 11) {
+                            return 'Must be between 1 and 10';
+                          }
+                          return null;
+                        },
+                        onSaved: (val) {
+                          _enteredquantity = int.parse(val!);
+                        },
                       ),
                     ),
-                    const SizedBox(width: 6,),
-                    Expanded(
-                      child: DropdownButton(items: [
-                        for(final Category in categories.entries)
-                        DropdownMenuItem(
-                          value: Category.value,
-                          child: Row(
-                          children: [
-                            Container(
-                              height: 16,
-                              width: 16,
-                              color: Category.value.itscolor,
-                            ),
-                            const SizedBox(width: 6,),
-                            Text(Category.value.title),
-                          ],
-                        ))
-                      ], onChanged:(value){
-                    
-                      }),
+                    const SizedBox(
+                      width: 6,
                     ),
-
+                    Expanded(
+                      child: DropdownButton(
+                          value: _selectedcategory,
+                          items: [
+                            for (final Category in categories.entries)
+                              DropdownMenuItem(
+                                  value: Category.value,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        height: 16,
+                                        width: 16,
+                                        color: Category.value.itscolor,
+                                      ),
+                                      const SizedBox(
+                                        width: 6,
+                                      ),
+                                      Text(Category.value.title),
+                                    ],
+                                  ))
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedcategory = value!;
+                              
+                            });
+                            
+                          }),
+                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: (){}, child:const Text("Reset")),
-                    ElevatedButton(onPressed: (){}, child: Text('submit')),
+                    TextButton(
+                        onPressed: () {
+                          _finalkey.currentState!.reset();
+                        },
+                        child: const Text("Reset")),
+                    ElevatedButton(onPressed: _saveitem, child: Text('submit')),
                   ],
                 )
               ],
