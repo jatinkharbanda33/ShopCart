@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_items.dart';
+
 import './new_item.dart';
+
+import '../models/grocery_item.dart';
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -9,13 +11,25 @@ class GroceryList extends StatefulWidget {
   State<GroceryList> createState() => _GroceryListState();
 }
 
-void addnew(BuildContext ctx) {
-  Navigator.of(ctx)
-      .push(MaterialPageRoute(builder: ((context) => const NewItem())));
-}
+var _finallist = [];
 
 class _GroceryListState extends State<GroceryList> {
   @override
+  void addnew() async {
+    final _newitem = await Navigator.of(context).push<GroceryItem>(
+        MaterialPageRoute(builder: ((context) => const NewItem())));
+    if (_newitem != null) {
+      setState(() {
+        _finallist.add(_newitem);
+      });
+    }
+  }
+
+  void _removeitem(GroceryItem m) {
+    _finallist.remove(m);
+    
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -23,23 +37,44 @@ class _GroceryListState extends State<GroceryList> {
         actions: [
           IconButton(
               onPressed: () {
-                return addnew(context);
+                return addnew();
               },
               icon: Icon(Icons.add))
         ],
       ),
-      body: ListView.builder(
-        itemCount: groceryItems.length,
-        itemBuilder: (ctx, index) => ListTile(
-          title: Text(groceryItems[index].name),
-          leading: Container(
-            height: 24,
-            width: 24,
-            color: groceryItems[index].category.itscolor,
-          ),
-          trailing: Text(groceryItems[index].quantity.toString()),
-        ),
-      ),
+      body: _finallist.isEmpty
+          ? Column(
+              children: [
+                SizedBox(
+                  height: 200,
+                ),
+                Center(
+                  child: Text(
+                    'Nothing here',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              ],
+            )
+          : ListView.builder(
+              itemCount: _finallist.length,
+              itemBuilder: (ctx, index) => Dismissible(
+                key: ValueKey(_finallist[index].id),
+                onDismissed: (direction) => _removeitem,
+                child: ListTile(
+                  title: Text(_finallist[index].name),
+                  leading: Container(
+                    height: 24,
+                    width: 24,
+                    color: _finallist[index].category.itscolor,
+                  ),
+                  trailing: Text(_finallist[index].quantity.toString()),
+                ),
+              ),
+            ),
     );
   }
 }
