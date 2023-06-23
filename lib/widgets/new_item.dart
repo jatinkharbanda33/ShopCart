@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../data/categories.dart';
 import '../models/category.dart';
 import '../models/grocery_item.dart';
+import 'package:http/http.dart' as http;
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -15,12 +17,26 @@ class _NewItemState extends State<NewItem> {
   var _enteredname = '';
   var _enteredquantity = 0;
   var _selectedcategory = categories[Categories.vegetables]!;
+  final url =
+      Uri.https('shopapp-637c7-default-rtdb.firebaseio.com', 'shoppinglist.json');
   void _saveitem() {
     if (_finalkey.currentState!.validate()) {
       _finalkey.currentState!.save();
-      Navigator.of(context).pop(
-        GroceryItem(id: DateTime.now().toString(), name: _enteredname, quantity: _enteredquantity, category: _selectedcategory)
+      http.post(url, headers: {
+        'Content-Type':'application/json'
+      },
+      body: json.encode({
+        'name': _enteredname,
+          'quantity': _enteredquantity,
+          'category': _selectedcategory.title,
+        
+      })
       );
+      Navigator.of(context).pop(GroceryItem(
+          id: DateTime.now().toString(),
+          name: _enteredname,
+          quantity: _enteredquantity,
+          category: _selectedcategory));
     }
   }
 
