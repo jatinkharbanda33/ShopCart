@@ -18,7 +18,7 @@ class _NewItemState extends State<NewItem> {
   var _enteredquantity = 0;
   var _selectedcategory = categories[Categories.vegetables]!;
   final url =
-      Uri.https('shopcart-dbda3-default-rtdb.firebaseio.com','shoppinglist');
+      Uri.https('shopcart-dbda3-default-rtdb.firebaseio.com','shoppinglist.json');
   void _saveitem() async {
     if (_finalkey.currentState!.validate()) {
       _finalkey.currentState!.save();
