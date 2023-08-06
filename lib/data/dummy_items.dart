@@ -1,5 +1,5 @@
-import 'package:theshopapp/models/grocery_item.dart';
-import 'package:theshopapp/data/categories.dart';
+import '../models/grocery_item.dart';
+import '../data/categories.dart';
 import '../models/category.dart';
 final groceryItems = [
   GroceryItem(

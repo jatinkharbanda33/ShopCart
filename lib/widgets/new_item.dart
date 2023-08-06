@@ -17,23 +17,21 @@ class _NewItemState extends State<NewItem> {
   var _enteredname = '';
   var _enteredquantity = 0;
   var _selectedcategory = categories[Categories.vegetables]!;
-  final url =
-      Uri.https('shopcart-dbda3-default-rtdb.firebaseio.com','shoppinglist.json');
+  final url = Uri.https(
+      'shopcart-dbda3-default-rtdb.firebaseio.com', 'shoppinglist.json');
   void _saveitem() async {
     if (_finalkey.currentState!.validate()) {
       _finalkey.currentState!.save();
-      final response=await http.post(url, headers: {
-        'Content-Type':'application/json'
-      },
-      body: json.encode({
-        'name': _enteredname,
-          'quantity': _enteredquantity,
-          'category': _selectedcategory.title,
-        
-      })
-      );
+      final response = await http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'name': _enteredname,
+            'quantity': _enteredquantity,
+            'category': _selectedcategory.title,
+          }));
+      
       Navigator.of(context).pop(GroceryItem(
-          id: DateTime.now().toString(),
+          id: jsonDecode(response.body)['name'],
           name: _enteredname,
           quantity: _enteredquantity,
           category: _selectedcategory));

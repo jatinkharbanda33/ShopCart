@@ -6,7 +6,6 @@ import '../models/grocery_item.dart';
 import 'package:http/http.dart' as http;
 import '../data/categories.dart';
 
-
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
 
@@ -94,16 +93,11 @@ class _GroceryListState extends State<GroceryList> {
     setState(() {
       _groceryItems.remove(item);
     });
-
-    final url = Uri.https('shopcart-dbda3-default-rtdb.firebaseio.com/shoppinglist/${item.id}.json');
+    print(item.id);
+    final url = Uri.https(
+        'shopcart-dbda3-default-rtdb.firebaseio.com/shoppinglist/${item.id}.json');
 
     final response = await http.delete(url);
-    if (response.statusCode >= 400) {
-      // Optional: Show error message
-      setState(() {
-        _groceryItems.insert(index, item);
-      });
-    }
   }
 
   @override
